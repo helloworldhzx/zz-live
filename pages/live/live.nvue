@@ -1,0 +1,105 @@
+<template>
+	<view class="live">
+		<video class="flex-1" src="https://cdn.jsdelivr.net/gh/chuzhixin/videos@master/video.mp4" autoplay  :controls="false"></video>
+		<!-- 头部区域 -->
+		<view class="header" :style="{top: `${statusBarHeight}px`}">
+			<view class="flex px-2 bg-danger" style="height: 80rpx;">
+				<!-- 主播信息 -->
+				<view class="anchor flex align-center">
+					<view class="">
+						<image style="width: 50rpx; height: 50rpx; border-radius: 50rpx;" src="../../static/tabbar/my-selected.png" mode=""></image>
+					</view>
+					<view class="flex-1">
+						<text class="text-white font-sm">名字</text>
+						<text class="text-white font-sm">123</text>
+					</view>
+					<text class="text-white">+</text>
+				</view>
+				<!-- 观众信息 -->
+				<view class="viewer flex align-center">
+					<view class="">
+						<image style="width: 50rpx; height: 50rpx; border-radius: 50rpx;" src="../../static/tabbar/my-selected.png" mode=""></image>
+					</view>
+					<text class="text-white">00000</text>
+				</view>
+			</view>
+			<!-- 金币 -->
+			<view class="px-2 my-2">
+				<view class="flex rounded-circle align-center" style="width: 375rpx;background-color: red;">
+					<view class="p">
+						<text class="text-warning">金币</text>
+					</view>
+					<view class="flex-1 flex flex-column justify-center">
+						<text class="text-white font">1234</text>
+					</view>
+				</view>
+			</view>
+			<!-- 礼物区域 -->
+			<view class="gift bg-dark">
+				
+			</view>
+			
+			<!-- 弹幕区域 -->
+			<view class="danmu bg-danger"></view>
+		</view>
+		
+		<!-- 底部 -->
+		<view class="footer flex align-center justify-center"></view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				statusBarHeight: 0
+			}
+		},
+		mounted() {
+			const res = uni.getSystemInfoSync();
+			this.statusBarHeight = res.statusBarHeight
+			uni.getLocation({
+				success(data) {
+					console.log(data);
+				}
+			})
+		},
+		methods: {
+			
+		}
+	}
+</script>
+
+<style>
+.live{
+	flex: 1;
+}
+.header{
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+}
+.anchor, .viewer{
+	width: 375rpx;
+}
+.gift{
+	width: 520rpx;
+	height: 500rpx;
+}
+.danmu{
+	width: 520rpx;
+	height: 300rpx;
+	position: fixed;
+	bottom: 120rpx;
+	left: 0;
+}
+.footer{
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: #0056B3;
+	height: 120rpx;
+}
+</style>
