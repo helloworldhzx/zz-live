@@ -1,13 +1,15 @@
 <template>
-	<view class="live">
-		<video class="flex-1" src="https://cdn.jsdelivr.net/gh/chuzhixin/videos@master/video.mp4" autoplay  :controls="false"></video>
+	<view class="live bg-dark">
+		<!-- <video class="flex-1" src="https://cdn.jsdelivr.net/gh/chuzhixin/videos@master/video.mp4" autoplay
+			:controls="false"></video> -->
 		<!-- 头部区域 -->
 		<view class="header" :style="{top: `${statusBarHeight}px`}">
 			<view class="flex px-2 bg-danger" style="height: 80rpx;">
 				<!-- 主播信息 -->
 				<view class="anchor flex align-center">
 					<view class="">
-						<image style="width: 50rpx; height: 50rpx; border-radius: 50rpx;" src="../../static/tabbar/my-selected.png" mode=""></image>
+						<image style="width: 50rpx; height: 50rpx; border-radius: 50rpx;"
+							src="../../static/tabbar/my-selected.png" mode=""></image>
 					</view>
 					<view class="flex-1">
 						<text class="text-white font-sm">名字</text>
@@ -18,16 +20,17 @@
 				<!-- 观众信息 -->
 				<view class="viewer flex align-center">
 					<view class="">
-						<image style="width: 50rpx; height: 50rpx; border-radius: 50rpx;" src="../../static/tabbar/my-selected.png" mode=""></image>
+						<image style="width: 50rpx; height: 50rpx; border-radius: 50rpx;"
+							src="../../static/tabbar/my-selected.png" mode=""></image>
 					</view>
 					<text class="text-white">00000</text>
 				</view>
 			</view>
 			<!-- 金币 -->
 			<view class="px-2 my-2">
-				<view class="flex rounded-circle align-center" style="width: 375rpx;background-color: red;">
+				<view class="flex rounded-circle align-center px-2" style="width: 375rpx;background-color: red">
 					<view class="p">
-						<text class="text-warning">金币</text>
+						<text class="text-warning font-md">金币</text>
 					</view>
 					<view class="flex-1 flex flex-column justify-center">
 						<text class="text-white font">1234</text>
@@ -35,27 +38,126 @@
 				</view>
 			</view>
 			<!-- 礼物区域 -->
-			<view class="gift bg-dark">
-				
-			</view>
-			
+			<gift ref='gift'></gift>
+
 			<!-- 弹幕区域 -->
-			<view class="danmu bg-danger"></view>
+			<danmu ref="danmu"></danmu>
 		</view>
-		
+
 		<!-- 底部 -->
-		<view class="footer flex align-center justify-center"></view>
+		<view class="footer flex align-center justify-between px-2">
+			<view class="">
+				<view class="btn px-3" @click="openInput">
+					<text class="text-white">说点什么...</text>
+				</view>
+			</view>
+			<view class="flex align-center">
+				<view class="btn btn-icon">
+					<text class="iconfont text-white">&#xe633;</text>
+				</view>
+				<view class="btn btn-icon bg-warning" @click="openGift">
+					<text class="iconfont">&#xe67c;</text>
+				</view>
+				<view class="btn btn-icon">
+					<text class="iconfont text-white">&#xe7cd;</text>
+				</view>
+				<view class="btn btn-icon" @click="back">
+					<text class="iconfont text-white">&#xe607;</text>
+				</view>
+			</view>
+		</view>
+
+		<!-- 输入框弹出层 -->
+		<uni-popup ref="input" type="bottom">
+			<view class="flex align-center bg-white px-3" style="width: 750rpx; height: 120rpx;">
+				<input v-model="content" type="text" value="" class="flex-1 border rounded" style="height: 80rpx;"
+					placeholder="请说点什么" />
+				<view class="flex align-center justify-center py-2 px-2 ml-3 rounded bg-main" style="height: 80rpx;">
+					<text class="text-white" @click="send">发送</text>
+				</view>
+			</view>
+		</uni-popup>
+
+		<!-- 礼物弹出层 -->
+		<uni-popup ref="giftPopup" type="bottom">
+			<view class="bg-white px-1" style="height: 550rpx;">
+				<view class="flex justify-between h-100">
+					<view class="flex align-center justify-center w-100 h-100">
+						<text class="text-main">礼物</text>
+					</view>
+					<view class="p flex align-center justify-center w-100 h-100" @click="closeGift()">
+						<text class="iconfont">&#xe607;</text>
+					</view>
+				</view>
+				<swiper style="height: 350rpx" class="border-bottom border-top" :indicator-dots="true" :interval="500">
+					<swiper-item>
+						<view class="flex flex-wrap">
+							<view @click="activeGift=item.id" class="border flex flex-column justify-center align-center"
+								style="width: 182.5rpx; height: 174rpx;"
+								:class="activeGift===item.id?'border-main':'border-transparent'" v-for="item in gifts">
+								<image style="width: 100rpx;height: 100rpx;" :src="item.image"></image>
+								<view class="flex mt-1">
+									<text class="text-warning mr-1">{{item.name}}</text>
+									<text>{{item.coin}}</text>
+								</view>
+							</view>
+						</view>
+					</swiper-item>
+				</swiper>
+				<view>
+
+				</view>
+				<view class="flex justify-end align-center h-100">
+					<view class="flex justify-center align-center bg-warning px-3 py-2 mr-3 rounded">
+						<text class="font">充值</text>
+					</view>
+					<view class="flex justify-center align-center bg-main px-3 py-2 mr-3 rounded">
+						<text class="text-white font" @click="sendGift">发送</text>
+					</view>
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
+	import danmu from '../../components/live/danmu.vue';
+	import gift from '../../components/live/gift.vue';
 	export default {
 		data() {
 			return {
-				statusBarHeight: 0
+				statusBarHeight: 0,
+				content: "",
+				activeGift: 0,
+				gifts: [{
+					id: "1",
+					name: "鸡蛋",
+					coin: 1,
+					image: "/static/gift/1.png"
+				},{
+					id: "2",
+					name: "鸡蛋",
+					coin: 1,
+					image: "/static/gift/2.png"
+				},{
+					id: "3",
+					name: "鸡蛋",
+					coin: 1,
+					image: "/static/gift/3.png"
+				},{
+					id: "4",
+					name: "鸡蛋",
+					coin: 1,
+					image: "/static/gift/4.png"
+				}]
 			}
 		},
+		components: {
+			danmu,
+			gift
+		},
 		mounted() {
+			// 获取状态栏的高度
 			const res = uni.getSystemInfoSync();
 			this.statusBarHeight = res.statusBarHeight
 			uni.getLocation({
@@ -63,43 +165,115 @@
 					console.log(data);
 				}
 			})
+
+			/* let id = 0
+			const clear = setInterval(() => {
+				this.$refs.danmu.send({
+					id: id,
+					name: "昵称" + id,
+					content: "再来一个" + id
+				})
+				if (id > 5) {
+					clearInterval(clear)
+				}
+				id++
+			}, 1000) */
+
+			/* let id2 = 0
+			const clear2 = setInterval(() => {
+				this.$refs.gift.send({
+					username: "发送人" + id2,
+					avatar: "",
+					gift_name: "蛋糕",
+					gift_image: "/static/gift/3.png",
+					num: 1
+				})
+				if (id2 > 5) {
+					clearInterval(clear2)
+				}
+				id2++
+			}, 1000) */
 		},
 		methods: {
-			
+			openInput() {
+				this.$refs.input.open()
+			},
+			openGift() {
+				this.$refs.giftPopup.open()
+			},
+			closeGift(){
+				this.$refs.giftPopup.close()
+			},
+			closeInput() {
+				this.$refs.input.close()
+			},
+			back() {
+				uni.navigateBack({
+					delta: 1
+				})
+			},
+			send() {
+				this.$refs.danmu.send({
+					id: new Date().getTime(),
+					name: "昵称",
+					content: this.content
+				})
+				this.content = ""
+				this.closeInput();
+			},
+			sendGift(){
+				const gift = this.gifts.find(item => item.id === this.activeGift)
+				this.$refs.gift.send({
+					username: "zz",
+					avatar: "",
+					gift_name: gift.name,
+					gift_image: gift.image,
+					num: 1
+				})
+			}
 		}
 	}
 </script>
 
 <style>
-.live{
-	flex: 1;
-}
-.header{
-	position: fixed;
-	left: 0;
-	right: 0;
-	top: 0;
-}
-.anchor, .viewer{
-	width: 375rpx;
-}
-.gift{
-	width: 520rpx;
-	height: 500rpx;
-}
-.danmu{
-	width: 520rpx;
-	height: 300rpx;
-	position: fixed;
-	bottom: 120rpx;
-	left: 0;
-}
-.footer{
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background-color: #0056B3;
-	height: 120rpx;
-}
+	.live {
+		flex: 1;
+	}
+
+	.header {
+		position: fixed;
+		left: 0;
+		right: 0;
+		top: 0;
+	}
+
+	.anchor,
+	.viewer {
+		width: 375rpx;
+	}
+
+	.footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 120rpx;
+	}
+
+	.btn {
+		height: 80rpx;
+		border-radius: 100rpx;
+		background-color: rgba(255, 255, 255, 0.12);
+		align-items: center;
+		justify-content: center;
+	}
+
+	.btn-icon {
+		width: 80rpx;
+		margin-right: 20rpx;
+	}
+
+	.h-100 {
+		height: 100rpx;
+	}
 </style>

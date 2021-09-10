@@ -346,6 +346,7 @@
 .border-light {border-color: #f8f9fa;}
 .border-dark {border-color: #343a40;}
 .border-white {border-color: #FFFFFF;}
+.border-transparent {border-color: transparent;}
 /* 圆角 */
 .rounded { border-radius: 8rpx;}
 .rounded-lg { border-radius: 14rpx;}
