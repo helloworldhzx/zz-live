@@ -52,7 +52,7 @@
 				</view>
 			</view>
 			<view class="flex align-center">
-				<view class="btn btn-icon">
+				<view class="btn btn-icon" @click="toCoin">
 					<text class="iconfont text-white">&#xe633;</text>
 				</view>
 				<view class="btn btn-icon bg-warning" @click="openGift">
@@ -195,6 +195,11 @@
 			}, 1000) */
 		},
 		methods: {
+			toCoin(){
+				uni.navigateTo({
+					url: "../coin/coin"
+				})
+			},
 			openInput() {
 				this.$refs.input.open()
 			},
