@@ -28,6 +28,15 @@
                 }
             }
         }
+        ,{
+            "path" : "pages/create-live/create-live",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
