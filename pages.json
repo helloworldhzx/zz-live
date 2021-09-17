@@ -1,13 +1,6 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-		    "path": "pages/live/live",
-		    "style": {
-		        "app-plus": {
-		        	 "titleNView": false
-		        }
-		    }
-		},{
 			"path": "pages/index/index",
 			"style": {
 				"app-plus": {
@@ -18,17 +11,30 @@
 							"type":"menu"
 						}]
 					}
-				}
+				},
+				"enablePullDownRefresh": true
 			}
 		},{
             "path": "pages/my/my",
             "style": {
-               "app-plus": {
-				   "titleNView": false
-			   }
+               "app-plus":{
+               	"titleNView":{
+               		"titleText":"个人中心",
+               		"titleAlign":"left",
+               		"buttons":[{
+               			"type":"menu"
+               		}]
+               	}
+               }
             }
-        }
-        ,{
+        },{
+		    "path": "pages/live/live",
+		    "style": {
+		        "app-plus": {
+		        	 "titleNView": false
+		        }
+		    }
+		},{
             "path" : "pages/create-live/create-live",
             "style" :                                                                                    
             {
@@ -44,6 +50,22 @@
 				"navigationBarTextStyle":"black",
 				"navigationBarTitleText":"我的余额"
             }
+            
+        }
+        ,{
+            "path" : "pages/login/login",
+           "style" : {
+           	"navigationBarTitleText":"",
+           	"navigationBarBackgroundColor":"#FFFFFF"
+           }
+            
+        }
+        ,{
+            "path" : "pages/user-set/user-set",
+            "style" : {
+				"navigationBarTitleText": "我的设置",
+				"enablePullDownRefresh": false
+			}
             
         }
     ],
