@@ -3,6 +3,7 @@
 		{
 			"path": "pages/index/index",
 			"style": {
+				"enablePullDownRefresh": true,
 				"app-plus": {
 					"titleNView": {
 						"titleText":"直播",
@@ -11,8 +12,8 @@
 							"type":"menu"
 						}]
 					}
-				},
-				"enablePullDownRefresh": true
+				}
+				
 			}
 		},{
             "path": "pages/my/my",
@@ -36,14 +37,12 @@
 		    }
 		},{
             "path" : "pages/create-live/create-live",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
+            "style": {
+                "app-plus": {
+                	 "titleNView": false
+                }
+            }  
+        },{
             "path": "pages/coin/coin",
             "style": {
 				"navigationBarBackgroundColor":"#FFFFFF",
@@ -59,15 +58,21 @@
            	"navigationBarBackgroundColor":"#FFFFFF"
            }
             
-        }
-        ,{
+        },{
             "path" : "pages/user-set/user-set",
             "style" : {
 				"navigationBarTitleText": "我的设置",
 				"enablePullDownRefresh": false
 			}
             
-        }
+        },{
+		    "path" : "pages/liveroom/liveroom",
+		    "style":{
+		        "app-plus": {
+		        	 "titleNView": false
+		        }
+		    }
+		}
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

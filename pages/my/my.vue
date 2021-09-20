@@ -55,6 +55,9 @@
 		computed:{
 			...mapState(['user'])
 		},
+		onShow(){
+			this.$store.dispatch('getUserInfo')
+		},
 		onNavigationBarButtonTap() {
 			this.authJump({
 				url: '../user-set/user-set'

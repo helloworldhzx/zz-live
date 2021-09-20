@@ -7,20 +7,14 @@
 			 'fontFamily': "iconfont",
 			 'src': "url('http://at.alicdn.com/t/font_1859985_7mxozsfdvib.ttf')"
 			});
-			
 			// minButton 没有pagePath 需要监听
-			uni.onTabBarMidButtonTap(function(){
+			uni.onTabBarMidButtonTap(() => {
 				console.log("path")
-				uni.navigateTo({
-					url:"/pages/live/live",
-					success() {
-						console.log(1)
-					},
-					fail(e) {
-						console.log(e);
-					}
+				this.authJump({
+					url: '/pages/create-live/create-live',
 				})
 			})
+			this.$store.dispatch('initUser')
 		},
 		onShow: function() {
 			console.log('App Show')

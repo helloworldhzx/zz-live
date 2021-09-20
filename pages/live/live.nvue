@@ -1,39 +1,48 @@
 <template>
 	<view class="live bg-dark">
-		<!-- <video class="flex-1" src="https://cdn.jsdelivr.net/gh/chuzhixin/videos@master/video.mp4" autoplay
-			:controls="false"></video> -->
+		<video class="flex-1" :src="src" autoplay
+			:controls="false"></video>
 		<!-- 头部区域 -->
 		<view class="header" :style="{top: `${statusBarHeight}px`}">
-			<view class="flex px-2 bg-danger" style="height: 80rpx;">
-				<!-- 主播信息 -->
-				<view class="anchor flex align-center">
-					<view class="">
-						<image style="width: 50rpx; height: 50rpx; border-radius: 50rpx;"
-							src="../../static/tabbar/my-selected.png" mode=""></image>
+			<view style="height: 80rpx;" class="px-2 flex justify-between align-center">
+				<view style="width: 325rpx;background-color: rgba(0,0,0,0.4);" class="flex rounded-circle">
+					<view class="p">
+						<image :src="detail.user.avatar || '/static/tabbar/min.png'" style="width: 70rpx;height: 70rpx;" class="rounded-circle"></image>
 					</view>
-					<view class="flex-1">
-						<text class="text-white font-sm">名字</text>
-						<text class="text-white font-sm">123</text>
+					<view class="flex-1 flex flex-column justify-center">
+						<text class="text-white font">{{ detail.user.username }}</text>
+						<text class="text-white font-sm">{{ detail.look_count }}</text>
 					</view>
-					<text class="text-white">+</text>
+					<view class="p">
+						<view class="rounded-circle flex align-center justify-center bg-danger" style="width: 70rpx;height: 70rpx;">
+							<text class="text-white">+</text>
+						</view>
+					</view>
 				</view>
-				<!-- 观众信息 -->
-				<view class="viewer flex align-center">
-					<view class="">
-						<image style="width: 50rpx; height: 50rpx; border-radius: 50rpx;"
-							src="../../static/tabbar/my-selected.png" mode=""></image>
+				
+				<view style="width: 325rpx;background-color: rgba(0,0,0,0.4);" class="flex rounded-circle">
+					<!-- 实时在线观看用户情况 -->
+					<scroll-view scroll-x="true" class="flex-1 flex">
+						<view class="p" v-for="(item,index) in userList" :key="index">
+							<image :src="item.avatar || '/static/tabbar/min.png'" style="width: 70rpx;height: 70rpx;" class="rounded-circle"></image>
+						</view>
+					</scroll-view>
+					<view class="p">
+						<view class="rounded-circle flex align-center justify-center bg-danger" style="width: 70rpx;height: 70rpx;">
+							<!-- 实时在线观看人数 -->
+							<text class="text-white font-sm">{{ userList.length }}</text>
+						</view>
 					</view>
-					<text class="text-white">00000</text>
 				</view>
 			</view>
 			<!-- 金币 -->
-			<view class="px-2 my-2">
-				<view class="flex rounded-circle align-center px-2" style="width: 375rpx;background-color: red">
+			<view style="height: 80rpx;" class="px-2 my-2">
+				<view style="width: 325rpx;background-color: rgba(0,0,0,0.4);" class="flex rounded-circle align-center">
 					<view class="p">
-						<text class="text-warning font-md">金币</text>
+						<text class="text-warning">金币</text>
 					</view>
 					<view class="flex-1 flex flex-column justify-center">
-						<text class="text-white font">1234</text>
+						<text class="text-white font">{{ detail.coin }}</text>
 					</view>
 				</view>
 			</view>
@@ -123,78 +132,125 @@
 <script>
 	import danmu from '../../components/live/danmu.vue';
 	import gift from '../../components/live/gift.vue';
+	import $C from '../../common/config.js'
+	import $H from '../../common/request.js'
+	import { mapState } from 'vuex'
 	export default {
 		data() {
 			return {
+				detail:{
+					"created_time": "",
+					"id": 1,
+					"title": "",
+					"cover": "",
+					"user_id": 0,
+					"look_count": 0,
+					"coin": 0,
+					"key": "",
+					"status": 0,
+					"userId": 0,
+					"user": {
+						"id": 0,
+						"username": "",
+						"avatar": ""
+					}
+				},
+				sign:"",
+				userList:[],
 				statusBarHeight: 0,
 				content: "",
 				activeGift: 0,
-				gifts: [{
-					id: "1",
-					name: "鸡蛋",
-					coin: 1,
-					image: "/static/gift/1.png"
-				},{
-					id: "2",
-					name: "鸡蛋",
-					coin: 1,
-					image: "/static/gift/2.png"
-				},{
-					id: "3",
-					name: "鸡蛋",
-					coin: 1,
-					image: "/static/gift/3.png"
-				},{
-					id: "4",
-					name: "鸡蛋",
-					coin: 1,
-					image: "/static/gift/4.png"
-				}]
+				gifts: []
 			}
+		},
+		onLoad(e){
+			this.id = e.id
+			let res = uni.getSystemInfoSync()
+			this.statusBarHeight = res.statusBarHeight
+			uni.$on('live',this.handleLiveEvent)
+			$H.get('/gift/list').then(res=>{
+				this.gifts = res.map(item=>{
+					item.image = $C.baseUrl + item.image
+					return item
+				})
+			})
+			$H.get('/live/read/' + this.id).then(res=>{
+				console.log(res);
+				this.detail = res.data
+				this.sign = res.sign
+			})
+			// 监听全局事件
+			uni.$on('liveStatus',this.handlStatusEvent)
+		},
+		destroyed() {
+			// 移除全局事件
+			uni.$off('liveStatus',this.handlStatusEvent)
 		},
 		components: {
 			danmu,
 			gift
 		},
+		computed:{
+			...mapState({
+				token: state => state.token,
+				socket: state => state.socket,
+			}),
+			src() {
+				console.log(this.sign, this.detail.key);
+				if(this.detail.key == '' || this.sign == ''){
+					return ''
+				}
+				return `${$C.livePlayBaseUrl}/live/${this.detail.key}.flv?sign=${this.sign}`
+			}
+		},
 		mounted() {
-			// 获取状态栏的高度
-			const res = uni.getSystemInfoSync();
-			this.statusBarHeight = res.statusBarHeight
-			uni.getLocation({
-				success(data) {
-					console.log(data);
-				}
-			})
-
-			/* let id = 0
-			const clear = setInterval(() => {
-				this.$refs.danmu.send({
-					id: id,
-					name: "昵称" + id,
-					content: "再来一个" + id
-				})
-				if (id > 5) {
-					clearInterval(clear)
-				}
-				id++
-			}, 1000) */
-
-			/* let id2 = 0
-			const clear2 = setInterval(() => {
-				this.$refs.gift.send({
-					username: "发送人" + id2,
-					avatar: "",
-					gift_name: "蛋糕",
-					gift_image: "/static/gift/3.png",
-					num: 1
-				})
-				if (id2 > 5) {
-					clearInterval(clear2)
-				}
-				id2++
-			}, 1000) */
+			this.joinOrLeaveLive('join')
+		},
+		destroyed() {
+			// 离开直播间
+			this.joinOrLeaveLive('leave')
+			// 移除全局事件
+			uni.$off('live',this.handleLiveEvent)
 		},
 		methods: {
+			joinOrLeaveLive(type){
+				this.socket.emit(type+'Live', {
+					token: this.token,
+					live_id: this.id
+				})
+			},
+			handlStatusEvent(e){
+				uni.showToast({
+					title: e.message,
+					icon:'none'
+				});
+			},
+			handleLiveEvent(e){
+				console.log(e);
+				const d = e.data;
+				switch (e.type){
+					case 'online':
+					this.userList = d.data
+						break;
+					case 'comment':
+						this.$refs.danmu.send({
+							id:d.id,
+							name:d.user.name,
+							content:d.content
+						})
+						this.content = ''
+						this.$refs.input.close()
+						break;
+					case 'gift':
+						d.gift_image = $C.imageUrl + d.gift_image
+						this.detail.coin += d.gift_coin * d.num
+						this.$refs.gift.send(d)
+						this.closeGift()
+						break;
+					default:
+						break;
+				}
+			},
 			toCoin(){
 				uni.navigateTo({
 					url: "../coin/coin"
@@ -218,23 +274,62 @@
 				})
 			},
 			send() {
-				this.$refs.danmu.send({
-					id: new Date().getTime(),
-					name: "昵称",
-					content: this.content
-				})
-				this.content = ""
-				this.closeInput();
+				if(this.content === ''){
+					return uni.showToast({
+						title: '评论内容不能为空',
+						icon: 'none'
+					});
+				}
+				
+				if(!this.token && !this.socket){
+					uni.navigateTo({
+						url: '../login/login',
+					});
+					return uni.showToast({
+						title: '请先登录',
+						icon: 'none'
+					});
+				}
+
+				if(this.socket){
+					this.socket.emit('comment',{
+						live_id:this.id,
+						data:this.content,
+						token:this.token
+					})
+				}
+
 			},
 			sendGift(){
-				const gift = this.gifts.find(item => item.id === this.activeGift)
-				this.$refs.gift.send({
-					username: "zz",
-					avatar: "",
-					gift_name: gift.name,
-					gift_image: gift.image,
-					num: 1
-				})
+				if(this.activeGift === 0){
+					return uni.showToast({
+						title: '请选择要发送的礼物',
+						icon: 'none'
+					});
+				}
+				let index = this.gifts.findIndex(item=>item.id === this.activeGift)
+				if(index === -1){
+					return
+				}
+				let g = this.gifts[index]
+				
+				if(!this.token && !this.socket){
+					uni.navigateTo({
+						url: '../login/login',
+					});
+					return uni.showToast({
+						title: '请先登录',
+						icon: 'none'
+					});
+				}
+				
+				if(this.socket){
+					this.socket.emit('gift',{
+						live_id:this.id,
+						gift_id:g.id,
+						token:this.token
+					})
+				}
 			}
 		}
 	}

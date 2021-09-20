@@ -61,6 +61,7 @@
 		},
 		onLoad() {
 			this.getList()
+			this.$store.dispatch('connectSocket');
 		},
 		onPullDownRefresh() {
 			this.page = 1
@@ -79,7 +80,6 @@
 		methods: {
 			getList(){
 				return this.$H.get('/live/list/'+this.page).then(res => {
-					console.log(res);
 					this.list = this.page === 1 ? res:[...this.list, ...res];
 					this.loadText = res.length < 10 ? '没有更多了' : '上拉加载更多'
 				})

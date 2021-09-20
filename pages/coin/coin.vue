@@ -140,10 +140,34 @@
 				}
 			},
 			recharge(){
-				uni.showToast({
-					title: "穷鬼",
-					icon: "none"
+				this.$H.post('/wxpay', { price: this.inputCoin }, { token: true }).then(orderInfo => {
+					console.log(orderInfo);
+					uni.requestPayment({
+						provider:"wxpay",
+						orderInfo:orderInfo,
+						success: (res) => {
+							this.$refs.coinPopup.close()
+							this.$store.dispatch('getUserInfo')
+							uni.showToast({
+								title: '充值成功',
+								icon: 'none'
+							});
+							uni.navigateBack({
+								delta: 1
+							});
+							console.log(res);
+						},
+						fail: (err) => {
+							console.log(err);
+							uni.showModal({
+								title: '提示',
+								content: '支付失败',
+								showCancel: false,
+							});
+						}
+					})
 				})
+				
 			},
 			coinPopupChange(value){
 				console.log(value);
