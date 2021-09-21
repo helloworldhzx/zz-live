@@ -8,8 +8,18 @@ Vue.use(Vuex)
 export default new Vuex.Store({
 	state: {
 		user: null,
+		follow: [],
 		token: null,
 		socket: null
+	},
+	mutations: {
+		addFollow (state, payload) {
+		  // 变更状态
+		  console.log(payload);
+		  console.log(state.follow);
+		  console.log(state.follow.push(payload));
+		  state.follow = [...state.follow, payload]
+		}
 	},
 	actions: {
 		connectSocket({ state }){
@@ -107,9 +117,11 @@ export default new Vuex.Store({
 		initUser({ state,dispatch }){
 			let u = uni.getStorageSync('user')
 			let t = uni.getStorageSync('token')
+			let f = uni.getStorageSync('follow')
 			if(u){
 				state.user = JSON.parse(u)
 				state.token = t
+				state.follow = f
 				// 连接socket
 				console.log('连接socket')
 				dispatch('connectSocket')
@@ -122,7 +134,9 @@ export default new Vuex.Store({
 				toast:false
 			}).then(res=>{
 				console.log(res);
-				state.user = res
+				state.user = res.user
+				state.follow = res.follow
+				uni.setStorageSync('follow', res.follow)
 				uni.setStorage({
 					key:"user",
 					data:JSON.stringify(state.user)

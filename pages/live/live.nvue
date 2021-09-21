@@ -7,14 +7,14 @@
 			<view style="height: 80rpx;" class="px-2 flex justify-between align-center">
 				<view style="width: 325rpx;background-color: rgba(0,0,0,0.4);" class="flex rounded-circle">
 					<view class="p">
-						<image :src="detail.user.avatar || '/static/tabbar/min.png'" style="width: 70rpx;height: 70rpx;" class="rounded-circle"></image>
+						<image :src="detail.user.avatar || '/static/avatar.png'" style="width: 70rpx;height: 70rpx;" class="rounded-circle"></image>
 					</view>
 					<view class="flex-1 flex flex-column justify-center">
 						<text class="text-white font">{{ detail.user.username }}</text>
 						<text class="text-white font-sm">{{ detail.look_count }}</text>
 					</view>
 					<view class="p">
-						<view class="rounded-circle flex align-center justify-center bg-danger" style="width: 70rpx;height: 70rpx;">
+						<view v-if="!isFollow" class="rounded-circle flex align-center justify-center bg-danger" style="width: 70rpx;height: 70rpx;" @click="handleFollow(detail.user.id)">
 							<text class="text-white">+</text>
 						</view>
 					</view>
@@ -24,7 +24,7 @@
 					<!-- 实时在线观看用户情况 -->
 					<scroll-view scroll-x="true" class="flex-1 flex">
 						<view class="p" v-for="(item,index) in userList" :key="index">
-							<image :src="item.avatar || '/static/tabbar/min.png'" style="width: 70rpx;height: 70rpx;" class="rounded-circle"></image>
+							<image :src="item.avatar || '/static/avatar.png'" style="width: 70rpx;height: 70rpx;" class="rounded-circle"></image>
 						</view>
 					</scroll-view>
 					<view class="p">
@@ -179,6 +179,7 @@
 				this.detail = res.data
 				this.sign = res.sign
 			})
+			console.log(this.follow);
 			// 监听全局事件
 			uni.$on('liveStatus',this.handlStatusEvent)
 		},
@@ -194,6 +195,7 @@
 			...mapState({
 				token: state => state.token,
 				socket: state => state.socket,
+				follow: state => state.follow
 			}),
 			src() {
 				console.log(this.sign, this.detail.key);
@@ -201,6 +203,10 @@
 					return ''
 				}
 				return `${$C.livePlayBaseUrl}/live/${this.detail.key}.flv?sign=${this.sign}`
+			},
+			isFollow(){
+				console.log(this.follow);
+				return this.follow.findIndex(item => item.follow_id === this.detail.user_id) > 0
 			}
 		},
 		mounted() {
@@ -250,6 +256,17 @@
 					default:
 						break;
 				}
+			},
+			// 添加关注
+			handleFollow(follow_id){
+				$H.post("/user/follow", {
+					follow_id,
+				}, {
+					token:true
+				}).then(res => {
+					this.$store.commit('addFollow', res)
+					console.log(res);
+				})
 			},
 			toCoin(){
 				uni.navigateTo({

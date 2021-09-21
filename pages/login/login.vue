@@ -29,6 +29,21 @@
 				form: {}
 			}
 		},
+		created() {
+			let token = uni.getStorageSync('token')
+			if(!token){
+				// 用户未登录
+				uni.showToast({
+					title: '请先登录',
+					icon: 'none'
+				});
+				return this.showLoading = false
+			}
+			// 用户已登录
+			uni.switchTab({
+				url:"../index/index"
+			})
+		},
 		methods: {
 			changeType(){
 				this.type = this.type === 'login' ? 'reg' : 'login'

@@ -5,7 +5,7 @@
 			<view class="flex justify-start align-center rounded-circle mr-3"
 				style="width: 325rpx;background-image: linear-gradient(to right, #BCABB1 , #65AAF0);">
 				<view class="">
-					<image style="width: 70rpx;height: 70rpx;" src="../../static/tabbar/min.png" mode=""></image>
+					<image class="rounded-circle" style="width: 70rpx;height: 70rpx;" :src="item.avatar || '../../static/avatar.png'" mode=""></image>
 				</view>
 				<view class="flex flex-1 flex-column mr-2">
 					<text class="text-white font-md">{{item.username}}</text>

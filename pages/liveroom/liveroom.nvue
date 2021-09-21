@@ -356,6 +356,7 @@
 			stop(){
 				this.context.stop({
 					success:()=>{
+						console.log("=========");
 						this.isStart = false
 						$H.post('/live/changeStatus',{
 							id:this.detail.id,
@@ -445,7 +446,7 @@
 				// console.log(e);
 			},
 			error(e){
-				// console.log(e);
+				console.log(e);
 			},
 			handleSliderChange(e){
 				this[this.popupType] = e.detail.value

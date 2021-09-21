@@ -1,6 +1,13 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+		    "path" : "pages/login/login",
+		   "style" : {
+		   	"navigationBarTitleText":"",
+		   	"navigationBarBackgroundColor":"#FFFFFF"
+		   }
+		    
+		},{
 			"path": "pages/index/index",
 			"style": {
 				"enablePullDownRefresh": true,
@@ -50,14 +57,6 @@
 				"navigationBarTitleText":"我的余额"
             }
             
-        }
-        ,{
-            "path" : "pages/login/login",
-           "style" : {
-           	"navigationBarTitleText":"",
-           	"navigationBarBackgroundColor":"#FFFFFF"
-           }
-            
         },{
             "path" : "pages/user-set/user-set",
             "style" : {
@@ -72,7 +71,42 @@
 		        	 "titleNView": false
 		        }
 		    }
-		}
+		},{
+            "path": "pages/editUser/editUser",
+            "style": {
+                "navigationBarTitleText": "编辑资料",
+                "navigationBarBackgroundColor": "#FFFFFF",
+				"navigationBarTextStyle":"black"
+            }
+            
+        }
+        ,{
+            "path" : "pages/history/history",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "观看记录",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/follow/follow",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "关注列表",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/myLive/myLive",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
