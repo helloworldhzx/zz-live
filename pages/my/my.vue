@@ -62,9 +62,6 @@
 				url: '../user-set/user-set'
 			})
 		},
-		mounted() {
-			console.log(this.user);
-		},
 		methods: {
 			openLogin(){
 				uni.navigateTo({

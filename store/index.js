@@ -133,7 +133,6 @@ export default new Vuex.Store({
 				noJump:true,
 				toast:false
 			}).then(res=>{
-				console.log(res);
 				state.user = res.user
 				state.follow = res.follow
 				uni.setStorageSync('follow', res.follow)
